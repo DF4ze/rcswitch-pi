@@ -48,7 +48,10 @@ typedef uint8_t byte;
 
 // Number of maximum High/Low changes per packet.
 // We can handle up to (unsigned long) => 32 bit * 2 H/L changes per bit + 2 for sync
-#define RCSWITCH_MAX_CHANGES 67
+// #define RCSWITCH_MAX_CHANGES 67
+// Modified By DF4ze : 	unsigned long long => 64 * 2 + 2 for sync ... +1...? \0 fin de chaine?
+//						Only send method
+#define RCSWITCH_MAX_CHANGES 131
 
 
 class RCSwitch {
@@ -56,29 +59,14 @@ class RCSwitch {
   public:
     RCSwitch();
     
-    void switchOn(int nGroupNumber, int nSwitchNumber);
-    void switchOff(int nGroupNumber, int nSwitchNumber);
-    void switchOn(char* sGroup, int nSwitchNumber);
-    void switchOff(char* sGroup, int nSwitchNumber);
-    void switchOn(char sFamily, int nGroup, int nDevice);
-    void switchOff(char sFamily, int nGroup, int nDevice);
+    // void switchOn(char* sCommand);
+    void send(char* sCommand);
 
     void sendTriState(char* Code);
-    void send(unsigned long Code, unsigned int length);
-    void send(char* Code);
-    
-    void enableReceive(int interrupt);
-    void enableReceive();
-    void disableReceive();
-    bool available();
-	void resetAvailable();
-	
-    unsigned long getReceivedValue();
-    unsigned int getReceivedBitlength();
-    unsigned int getReceivedDelay();
-	unsigned int getReceivedProtocol();
-    unsigned int* getReceivedRawdata();
-  
+
+ 	// char * get_BinarySent();
+ 	// void set_BinarySent( char* nBinarySent);
+ 
     void enableTransmit(int nTransmitterPin);
     void disableTransmit();
     void setPulseLength(int nPulseLength);
@@ -86,35 +74,30 @@ class RCSwitch {
     void setReceiveTolerance(int nPercent);
 	void setProtocol(int nProtocol);
 	void setProtocol(int nProtocol, int nPulseLength);
-  
+
+	char nBinarySent[64];
+	
   private:
-    char* getCodeWordB(int nGroupNumber, int nSwitchNumber, boolean bStatus);
-    char* getCodeWordA(char* sGroup, int nSwitchNumber, boolean bStatus);
-    char* getCodeWordC(char sFamily, int nGroup, int nDevice, boolean bStatus);
-    void sendT0();
-    void sendT1();
-    void sendTF();
+    char* getCodeWordA(char* sCommand, char * sReturn ); 
+
     void send0();
     void send1();
     void sendSync();
     void transmit(int nHighPulses, int nLowPulses);
 
     static char* dec2binWzerofill(unsigned long dec, unsigned int length);
-    
-    static void handleInterrupt();
-	static bool receiveProtocol1(unsigned int changeCount);
-	static bool receiveProtocol2(unsigned int changeCount);
+	char * ulltostr(unsigned long long value, char *ptr, int base);
+	char * ultostr(unsigned long value, char *ptr, int base);
+	
+	static void handleInterrupt();
+
     int nReceiverInterrupt;
     int nTransmitterPin;
     int nPulseLength;
     int nRepeatTransmit;
 	char nProtocol;
+	
 
-	static int nReceiveTolerance;
-    static unsigned long nReceivedValue;
-    static unsigned int nReceivedBitlength;
-	static unsigned int nReceivedDelay;
-	static unsigned int nReceivedProtocol;
     static unsigned int timings[RCSWITCH_MAX_CHANGES];
 
     

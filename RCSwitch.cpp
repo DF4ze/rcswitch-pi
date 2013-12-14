@@ -199,18 +199,20 @@ char * RCSwitch::ultostr(unsigned long value, char *ptr, int base)
  */
 // void RCSwitch::switchOn( char* sCommand ) {
 void RCSwitch::send( char* sCommand ) {
-  this->sendTriState( this->getCodeWordA( sCommand ) );
+  char sReturn[64];
+  this->getCodeWordA( sCommand, sReturn );
+  this->sendTriState( sReturn );
 }
 
 /**
  * Like getCodeWord  (Type A)
  */
 
-char* RCSwitch::getCodeWordA(char* sCommand) {
+char* RCSwitch::getCodeWordA(char* sCommand, char * sReturn) {
    
  	unsigned int iTaille =4;
 	// char* sReturn;
-	char sReturn[64];
+	// char sReturn[64];
 	unsigned long ulCommand = 0;
 	unsigned long long ullCommand = 0;
    
@@ -222,7 +224,7 @@ char* RCSwitch::getCodeWordA(char* sCommand) {
    
 	strcpy( this->nBinarySent, sReturn );
 
-	return sReturn;
+	//return sReturn;
 }
 
 
